@@ -431,7 +431,7 @@ class Sidebar extends React.Component {
             <hr className="my-2" />
             <Nav navbar>
               {this.createRecommendationLinks(routes)}
-              <NavItem>
+{/*               <NavItem>
                 <NavLink
                   to={"/app/topicsrecommend/" + getItem("userId")}
                   tag={NavLinkRRD}
@@ -446,19 +446,7 @@ class Sidebar extends React.Component {
             <hr className="my-2" />
             <h6 className="navbar-heading text-muted">Conference Insights</h6>
             <hr className="my-2" />
-            {/* <Nav navbar>
-              <NavItem>
-                <NavLink
-                  to={"/app/topicform/" + getItem("userId")}
-                  tag={NavLinkRRD}
-                  onClick={this.closeCollapse}
-                  activeClassName="active"
-                >
-                  <i className="fas fa-atom text-blue"></i>
-                  Topic Cloud
-                </NavLink>
-              </NavItem>
-            </Nav> */}
+
             <Nav navbar>
               <NavItem>
                 <NavLink
@@ -491,7 +479,7 @@ class Sidebar extends React.Component {
                   <i className="fas fa-user-friends text-green"></i>
                   Compare Researcher
                 </NavLink>
-            </NavItem>
+            </NavItem> */}
            
           </Nav>
        
