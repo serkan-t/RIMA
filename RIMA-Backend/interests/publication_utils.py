@@ -9,8 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 utc = pytz.timezone('UTC')
 
-
-
+EMBEDDING ='Transformers'
+USER ='user_model'
+KEYWORDS = 'paper_keywords'
+TITLE_ABSTRACT = 'paper_title_abstract'
 API = SemanticScholarAPI()
 
 def get_recommended_publications_doc_level(interests):
@@ -31,12 +33,12 @@ def get_recommended_publications_doc_level(interests):
         user_interest_model_dict.keys(), limit)
     papers = response['data']
     # specify embedding method
-    embedding = "Transformers"
+    # embedding = "Transformers"
 
     # get user vector representation only one time because it is constant
-    data_type = 'user_model'
+    # data_type = 'user_model'
     # get embedding vector
-    user_vector = get_vector_representation(data_type, user_interest_model_dict, embedding)
+    user_vector = get_vector_representation(USER, user_interest_model_dict, EMBEDDING)
 
 
     # print("user vector", user_vector)
@@ -47,19 +49,19 @@ def get_recommended_publications_doc_level(interests):
     papers_with_scores = []
     count = 0 
     # embedding = 'SPECTER'
-    data_type = 'paper_title_abstract'
+    # data_type = 'paper_title_abstract'
     for paper in unique_papers:
        
         try:
             # get vector representation for paper
-            paper_vector = get_vector_representation(data_type, paper, embedding) # vector shape(1,768)
+            paper_vector = get_vector_representation(TITLE_ABSTRACT, paper, EMBEDDING) # vector shape(1,768)
 
             #convert vector shape to 768 to match user vector
             paper_vector = np.squeeze(np.asarray(paper_vector))
 
             # print("paper vector", paper_vector)
             #calculate similarity
-            score = (get_interest_paper_similarity_score(user_vector,paper_vector, embedding) or 0) * 100
+            score = (get_interest_paper_similarity_score(user_vector, paper_vector, EMBEDDING) or 0) * 100
             # score = round((get_interest_paper_similarity_score(normalized_user_vector, normalized_paper_vector) or 0) * 100, 2)
             print('score in get recommended papers\n', score)
             
@@ -100,19 +102,19 @@ def get_recommended_publications(interests):
     papers = response['data']
 
     # specify embedding method
-    embedding = "Transformers"
+    # embedding = "Transformers"
     # get user vector representation only one time because it is constant
-    data_type = 'user_model'
+    # data_type = 'user_model'
     # get embedding vector
     # user_vector = get_weighted_vector_representation(user_interests, user_interests_weights, embedding)
-    user_vector = get_vector_representation(data_type, user_interest_model_dict, embedding)
+    user_vector = get_vector_representation(USER, user_interest_model_dict, EMBEDDING)
     # Extract unique papers according to their IDs and removing papers with no abstarct
     unique_papers = {each['paperId']: each for each in papers if each['abstract']}.values()
     
     # iterating over papers to extract keywords from them and calculate similarity with user interst vector
     papers_with_scores = []
     count = 0
-    data_type = 'paper_keywords'
+    # data_type = 'paper_keywords'
 
     for paper in unique_papers:
         text = (paper['title'] if paper['title'] else '') + ' ' + paper['abstract']
@@ -134,11 +136,11 @@ def get_recommended_publications(interests):
         # get vectorrepresentation for paper
         # keywords_vector = get_weighted_vector_representation(keywords_list, keywords_weights, embedding)
         # keywords_vector = get_vector_representation(data_type, paper_keywords, embedding)
-        keywords_vector = get_vector_representation(data_type, top_ten_keywords, embedding)
+        keywords_vector = get_vector_representation(KEYWORDS, top_ten_keywords, EMBEDDING)
 
         #convert vector shape from(1, dim) to (dim) to match user vector
         keywords_vector = np.squeeze(np.asarray(keywords_vector))
-        score = (get_interest_paper_similarity_score(user_vector,keywords_vector, embedding) or 0) * 100
+        score = (get_interest_paper_similarity_score(user_vector,keywords_vector, EMBEDDING) or 0) * 100
         
         # print('score in get recommended papers\n', score)
         #Jaleh's work 
@@ -146,19 +148,19 @@ def get_recommended_publications(interests):
         interests_similarity = {}
         keywords_similarity={}
         for interest in interests: 
-            interest_vector = get_vector_representation('user_model', interest, embedding)
-            interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, embedding) or 0) * 100,2)
+            interest_vector = get_vector_representation(USER, interest, EMBEDDING)
+            interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
             interests_similarity[interest['text']] = interest_score
 
         # Hoda
         #keyword Interest similarity-Hoda    
             for keyword, weight in top_ten_keywords.items():
 
-                keyword_vector = get_vector_representation(data_type, keyword, embedding)
+                keyword_vector = get_vector_representation(KEYWORDS, keyword, EMBEDDING)
 
                 #convert vector shape from(1, dim) to (dim) to match user vector
                 keyword_vector = np.squeeze(np.asarray(keywords_vector))
-                keyword_score = np.round((get_interest_paper_similarity_score(interest_vector,keyword_vector, embedding) or 0) * 100,2)
+                keyword_score = np.round((get_interest_paper_similarity_score(interest_vector,keyword_vector, EMBEDDING) or 0) * 100,2)
 
                 keyword_score=keyword_score* (weight/5)
                 if not keywords_similarity.__contains__(keyword):
@@ -195,23 +197,23 @@ def get_interest_paper_similarity(data):
     user_interest_model_dict = {}
     for interest in data['interests']: 
         user_interest_model_dict[interest['text']] = interest['weight']
-    data_type = 'user_model'
-    user_vector = get_vector_representation(data_type, user_interest_model_dict, embedding)
+    # data_type = 'user_model'
+    user_vector = get_vector_representation(USER, user_interest_model_dict, EMBEDDING)
 
     # user_interests = list(user_interest_model_dict.keys())
     # user_interests_weights = list(user_interest_model_dict.values())
-    data_type = 'paper_keywords'
-    keywords_vector = get_vector_representation(data_type, paper_keywords, embedding)
+    # data_type = 'paper_keywords'
+    keywords_vector = get_vector_representation(KEYWORDS, paper_keywords, EMBEDDING)
 
         #convert vector shape from(1, dim) to (dim) to match user vector
     keywords_vector = np.squeeze(np.asarray(keywords_vector))
 
-    score = np.round((get_interest_paper_similarity_score(user_vector,keywords_vector, embedding) or 0) * 100,2)
+    score = np.round((get_interest_paper_similarity_score(user_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
     interest_score = 0
     interests_similarity = {}
     for interest in data['interests']: 
-        interest_vector = get_vector_representation('user_model', interest, embedding)
-        interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, embedding) or 0) * 100,2)
+        interest_vector = get_vector_representation(USER, interest, EMBEDDING)
+        interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
         interests_similarity[interest['text']] = interest_score
     
     paper={}
@@ -228,33 +230,29 @@ def get_keywords_similarities(data):
     for interest in interests: 
         user_interest_model_dict[interest['text']] = interest['weight'] 
 
-    data_type = 'user_model'
-    user_vector = get_vector_representation(data_type, user_interest_model_dict, embedding)
+    # data_type = 'user_model'
+    user_vector = get_vector_representation(USER, user_interest_model_dict, EMBEDDING)
 
     # user_interests = list(user_interest_model_dict.keys())
     # user_interests_weights = list(user_interest_model_dict.values())
-    data_type = 'paper_keywords'
-    keywords_vector = get_vector_representation(data_type, keywords, embedding)
+    # data_type = 'paper_keywords'
+    keywords_vector = get_vector_representation(KEYWORDS, keywords, EMBEDDING)
 
         #convert vector shape from(1, dim) to (dim) to match user vector
     keywords_vector = np.squeeze(np.asarray(keywords_vector))
 
-    score = np.round((get_interest_paper_similarity_score(user_vector,keywords_vector, embedding) or 0) * 100,2)
+    score = np.round((get_interest_paper_similarity_score(user_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
 
-    user_interests = list(user_interest_model_dict.keys())
-    user_interests_weights = list(user_interest_model_dict.values())
-    keywords_list = list(keywords.keys())
-    keywords_weights = list(keywords.values())
 
     
     keyword_score = 0
     keywords_similarity = {}
     for keyword in keywords: 
-        keyword_vector = get_vector_representation(data_type, keyword, embedding)
+        keyword_vector = get_vector_representation(KEYWORDS, keyword, EMBEDDING)
 
         #convert vector shape from(1, dim) to (dim) to match user vector
         keyword_vector = np.squeeze(np.asarray(keywords_vector))
-        keyword_score = np.round((get_interest_paper_similarity_score(user_vector,keyword_vector, embedding) or 0) * 100,2)
+        keyword_score = np.round((get_interest_paper_similarity_score(user_vector,keyword_vector, EMBEDDING) or 0) * 100,2)
         keywords_similarity[keyword] = keyword_score
     
     paper={}
