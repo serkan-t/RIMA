@@ -546,7 +546,7 @@ class RestAPI {
     const TOKEN = getItem("accessToken");
     return axios({
       method: "POST",
-      url: `${BASE_URL}/api/interests/recommended-papers`,
+      url: `${BASE_URL}/api/interests/recommended-publications`,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

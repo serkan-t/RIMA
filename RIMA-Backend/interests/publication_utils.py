@@ -147,7 +147,8 @@ def get_recommended_publications(interests):
         interest_score = 0
         interests_similarity = {}
         keywords_similarity={}
-        for interest in interests: 
+        for interest in interests: # TODO : fix the error in single interests type of loops because interests is a dictionary with text and weight as the keys 
+            print("single interest", interest)
             interest_vector = get_vector_representation(USER, interest, EMBEDDING)
             interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
             interests_similarity[interest['text']] = interest_score
