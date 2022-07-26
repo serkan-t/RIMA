@@ -90,7 +90,7 @@ def get_recommended_publications(interests):
     user_interest_model_dict = {}  # creates a dictionary of user interest model
     
     
-    limit = 30 # number of papers to retrieve
+    limit = 30 # number of papers to be retrieved
     for interest in interests: 
         user_interest_model_dict[interest['text']] = interest['weight'] 
         # e.x user_interest_model_dict = {'analytics': 5, 'peer assessment': 5, 'personalization': 5, 'theory': 5, 'recommender system': 5}
@@ -132,6 +132,7 @@ def get_recommended_publications(interests):
 
         # Select top 10 keywords - keeping more 5 
         top_ten_keywords = dict(list(paper_keywords.items())[:10])
+        print("top_ten_keywords ", top_ten_keywords)
         extra_keywords = dict(list(paper_keywords.items())[10:15])
         # get vectorrepresentation for paper
         # keywords_vector = get_weighted_vector_representation(keywords_list, keywords_weights, embedding)
@@ -147,9 +148,12 @@ def get_recommended_publications(interests):
         interest_score = 0
         interests_similarity = {}
         keywords_similarity={}
+        
         for interest in interests: # TODO : fix the error in single interests type of loops because interests is a dictionary with text and weight as the keys 
-            print("single interest", interest)
-            interest_vector = get_vector_representation(USER, interest, EMBEDDING)
+            single_interest ={}
+            single_interest[interest['text']] = interest['weight'] 
+            print("single interest", single_interest)
+            interest_vector = get_vector_representation(USER, single_interest, EMBEDDING)
             interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
             interests_similarity[interest['text']] = interest_score
 
@@ -157,7 +161,9 @@ def get_recommended_publications(interests):
         #keyword Interest similarity-Hoda    
             for keyword, weight in top_ten_keywords.items():
 
-                keyword_vector = get_vector_representation(KEYWORDS, keyword, EMBEDDING)
+                single_keyword ={}
+                single_keyword[keyword] = weight
+                keyword_vector = get_vector_representation(KEYWORDS, single_keyword, EMBEDDING)
 
                 #convert vector shape from(1, dim) to (dim) to match user vector
                 keyword_vector = np.squeeze(np.asarray(keywords_vector))
@@ -206,14 +212,17 @@ def get_interest_paper_similarity(data):
     # data_type = 'paper_keywords'
     keywords_vector = get_vector_representation(KEYWORDS, paper_keywords, EMBEDDING)
 
-        #convert vector shape from(1, dim) to (dim) to match user vector
+    #convert vector shape from(1, dim) to (dim) to match user vector
     keywords_vector = np.squeeze(np.asarray(keywords_vector))
 
     score = np.round((get_interest_paper_similarity_score(user_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
     interest_score = 0
     interests_similarity = {}
+
     for interest in data['interests']: 
-        interest_vector = get_vector_representation(USER, interest, EMBEDDING)
+        single_interest ={}
+        single_interest[interest['text']] = interest['weight']
+        interest_vector = get_vector_representation(USER, single_interest, EMBEDDING)
         interest_score = np.round((get_interest_paper_similarity_score(interest_vector,keywords_vector, EMBEDDING) or 0) * 100,2)
         interests_similarity[interest['text']] = interest_score
     
@@ -225,6 +234,7 @@ def get_interest_paper_similarity(data):
 
 
 def get_keywords_similarities(data):
+    print("data in get_keywords_similarity",data)
     keywords = data['keywords']
     interests = data['interests']
     user_interest_model_dict={}

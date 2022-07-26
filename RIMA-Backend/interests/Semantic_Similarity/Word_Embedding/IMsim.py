@@ -88,8 +88,8 @@ def calculate_similarity(source_doc,
             word_vecs = []
             for word in words:
                 try:
-                    #vec = glove_model[word]
-                    vec = GetGloveVector(word)
+                    vec = glove_model[word]
+                    # vec = GetGloveVector(word)
                     word_vecs.append(vec)
                 except KeyError:
                     pass
