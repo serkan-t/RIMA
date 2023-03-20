@@ -14,6 +14,7 @@ import json
 from . import tests
 from collections import OrderedDict
 from django.urls import conf, reverse
+from django.conf import settings
 from django.http.response import HttpResponse
 from rest_framework.views import APIView
 from urllib.parse import unquote
@@ -152,7 +153,7 @@ class SharedWordEvolutionView(APIView):
         weights = []
         years_range = []
         all_models_data = []
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
 
         url_splits_question_mark = confutils.split_restapi_url(
             request.get_full_path(), r'?')
@@ -242,7 +243,7 @@ class conferenceDeleteView(APIView):
     serializer_class = ConferenceSerializer
 
     def delete(self, request, pk):
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
 
         print(pk)
         conference_name_abbr = pk
@@ -257,7 +258,7 @@ class conferenceDeleteView1(APIView):
     serializer_class = ConferenceSerializer
 
     def delete(self, request, pk):
-        # session = graphDB_Driver.session()
+        # session = settings.NEO4J_SESSION.session()
 
         print(pk)
         conference_name_abbr = pk
@@ -275,7 +276,7 @@ class conferencesSharedWordsBarView(APIView):
         conferences_events_list = []
         avaiable_events = []
         not_available_events = []
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
         url_splits = confutils.split_restapi_url(request.get_full_path(), r'?')
         conferences_list = confutils.split_restapi_url(url_splits[-1], r'&')
         year = confutils.split_restapi_url(url_splits[-2], r'/')[-2]
@@ -323,7 +324,7 @@ class DataTimeLineChartView(APIView):
         result_data = []
         conference_all_models_words = []
         conferences_all_events = []
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
 
         url_splits = confutils.split_restapi_url(request.get_full_path(), r'?')
         keyword_or_topic = url_splits[0].split('/')[-2]
@@ -378,7 +379,7 @@ BAB Conference Events views
 class ConferenceEventsView(ListCreateAPIView):
 
     def get(self, request, *args, **kwargs):
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
 
         data = []
         url_path = self.request.get_full_path()
@@ -491,7 +492,7 @@ class addConferenceView(APIView):
         return Response(data)
 
     def post(self, request, *args, **kwargs):
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
         request_data = self.request.data
 
         print("$$$$$$$$$$$$$$$$$$$:",
@@ -544,7 +545,7 @@ class confEvents(APIView):
         print("topics_split:", topics_split)
         #print("The year is:",year)
         conferences_events_JSON = []
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session
         conference_events = session.execute_read(
             GetConferenceEvents, conference_name_abbr=topics_split[-1])
         # Conference_Event.objects.filter(conference_name_abbr=topics_split[-1]).values_list(
@@ -940,7 +941,7 @@ class allWords(APIView):
         models_data = []
         result_data_with_duplicates = []
         result_data = []
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
 
         conference_events_objs = session.execute_read(
             GetConferenceEvents, conference_name_abbr)
@@ -1003,7 +1004,7 @@ View to get topics for stacked area chart- topic evolution
 
 class MultipleTopicAreaView(APIView):
     def get(self, request, *args, **kwargs):
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
         models_data = []
         result_data = []
         weights = []
@@ -1089,7 +1090,7 @@ class MultipleKeyAreaView(APIView):
 
 class FetchPaperView(APIView):
     def get(self, request, *args, **kwargs):
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
         title = ""
         url_spilts = confutils.split_restapi_url(request.get_full_path(), r'/')
         title = url_spilts[-1]
@@ -1318,7 +1319,7 @@ class SearchKeywordView(APIView):
         keyword_or_ropic = ""
         word = url_splits[-2]
         conference_event_name_abbr = url_splits[-1]
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
         models_data = confutils.get_abstract_based_on_keyword(
             conference_event_name_abbr, word)
         if not models_data:
@@ -1479,7 +1480,7 @@ class AuthorFetchYearView(APIView):
         print("##############AuthorFetchYearView")
         result_data = []
         models_data = []
-        session = graphDB_Driver.session()
+        session = settings.NEO4J_SESSION.session()
         url_splits = confutils.split_restapi_url(request.get_full_path(), r'/')
         conference_event_name = url_splits[-1]
         conference_name = url_splits[-2]

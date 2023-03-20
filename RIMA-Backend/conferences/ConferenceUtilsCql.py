@@ -4,15 +4,17 @@ from .models import (Author, Author_has_Papers, Event_has_Topic, Conf_Event_Topi
 from interests.Keyword_Extractor.extractor import getKeyword
 from interests.wikipedia_utils import wikicategory, wikifilter
 from django.db.models import Q
+from django.conf import settings
 import base64
 from matplotlib_venn import venn2, venn2_circles, venn2_unweighted
 from matplotlib import pyplot as plt
-from django.conf import settings
 import re
 from neo4j import GraphDatabase
 from .Neo4jConfig import graphDB_Driver
 
-session = graphDB_Driver.session()
+
+# session = graphDB_Driver.session()
+session = settings.NEO4J_SESSION.session()
 
 
 def CreateConference(tx, name, url, platform_name, platform_url):

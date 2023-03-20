@@ -32,7 +32,7 @@ def get_conference_general_data(conference_name_abbr):
     Returns:
         dict: dictionary of the general data
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     result_data = {'series': []}
     conference_events_result_data = []
@@ -120,7 +120,7 @@ def get_conferences_list():
         list: list of dictionaries of the conferences data
     """
     data = []
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     conferences = session.execute_read(GetConferences)
     for x in range(len(conferences)):
@@ -148,7 +148,7 @@ def get_authors_data(conference_name_abbr="", conference_event_name_abbr=""):
     Returns:
         list: list of data dictionaries for every author
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     data = []
 
@@ -229,7 +229,7 @@ def get_author_publications_in_conf(author_id, conference_name_abbr, conference_
     Returns:
         list: sorted list of dictionaries. Conference event is the sort criterion
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     result_data = []
     if conference_event_name_abbr == "":
@@ -273,7 +273,7 @@ def get_event_papers_data(conference_event_name_abbr):
         list: list of papers objects
     """
     conference_event_papers_data = []
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     conference_event_obj = session.execute_read(
         GetEventPapers, conference_event_name_abbr)
@@ -294,7 +294,7 @@ def get_keywords_from_models(conference_event_name_abbr):
     Returns:
         list: sorted list of dictionaries of keywords and their weights and conference event
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     data = []
     event_has_keyword_objs = session.execute_read(
@@ -323,7 +323,7 @@ def get_topics_from_models(conference_event_name_abbr):
     Returns:
         list: sorted list of dictionaries of topics and their weights and conference event
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     data = []
     event_has_topic_objs = session.execute_read(
@@ -355,7 +355,7 @@ def get_abstract_based_on_keyword(conference_event_name_abbr, keyword):
     Returns:
         list: list of dictionaries of the found papers 
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     conference_event_papers_data = session.execute_read(
         GetEventPapers, conference_event_name_abbr)
@@ -404,7 +404,7 @@ def get_shared_words_between_events(conference_events_list, keyword_or_topic):
 
     shared_words = list(set([word for word in all_words if all_words.count(
         word) == len(conference_events_list)]))
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     for word in shared_words:
         words_weights = []
@@ -444,7 +444,7 @@ def get_shared_words_between_conferences(conferences_list, keyword_or_topic):
     one_conference_words = []
     models_words = []
     shared_words = []
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     for conference in conferences_list:
         conference_event_objs = session.execute_read(
@@ -487,7 +487,7 @@ def get_word_weight_event_based(conference_event_objs, word, keyword_or_topic):
     Returns:
         list: list of data dictionaries of the weight of a word in every given conference event 
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     result_data = []
 
@@ -566,7 +566,7 @@ def get_years_range_of_conferences(conferences_list, all_or_shared):
     result_data = []
     years_filtering_list = []
     years_filtering_list = []
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     for conference in conferences_list:
         # conference_obj = Conference.objects.get(
@@ -642,7 +642,7 @@ def add_data_to_conf_event_model2(conference_name_abbr):
     Done by fathy
     """
 
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     print("################")
     conf_list = []
@@ -755,7 +755,7 @@ def add_data_to_conf_paper_and_author_models2(conference_name_abbr, conf_event_n
         conf_event_name_abbr (str): the name of the conference event
     Done by fathy
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
     conference_event_obj = session.execute_read(
         GetEventData, f'{conf_event_name_abbr}')
     print(conference_event_obj, "fatthyfathy")
@@ -838,7 +838,7 @@ def add_data_to_author_models2(author_data, paper_obj, conference_obj, conferenc
 
     not used
     """
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     session.execute_write(
         CreateAuthor, f"{author_data['authorId']}", f"{author_data['name']}", f"{author_data['url']}")
@@ -896,7 +896,7 @@ def add_data_to_author_keyword_and_topic_models(conference_event_name_abbr):
 
     authors_publications_dicts_list = []
     abstract_title_str = ""
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     authors_publications_event_objs = session.execute_read(
         GetEventAuthors, conference_event_name_abbr)
@@ -995,7 +995,7 @@ def add_data_to_conference_keyword_and_topic_models(conference_event_name_abbr):
 
     abstract_title_str = ""
     conference_event_papers_data = []
-    session = graphDB_Driver.session()
+    session = settings.NEO4J_SESSION.session()
 
     conference_event_papers_data = get_event_papers_data(
         conference_event_name_abbr)

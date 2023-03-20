@@ -8,10 +8,15 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from os.path import exists
 import json
 import logging.config
 from django.core.management.utils import get_random_secret_key
 import yaml
+from dotenv import load_dotenv
+from neo4j import GraphDatabase
+
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,9 +25,14 @@ with open(os.path.join(BASE_DIR, "config", 'config.yaml'), 'r') as file:
     configuration = file.read()
 configuration = yaml.safe_load(configuration)
 
-with open(os.path.join(BASE_DIR, "config", 'twitter_config.yaml'), 'r') as file:
-    twitter_configuration = file.read()
-twitter_configuration = yaml.safe_load(twitter_configuration)
+if exists(os.path.join(BASE_DIR, "config", 'twitter_config.yaml')):
+    with open(os.path.join(BASE_DIR, "config", 'twitter_config.yaml'), 'r') as file:
+        twitter_configuration = file.read()
+    twitter_configuration = yaml.safe_load(twitter_configuration)
+else:
+    with open(os.path.join(BASE_DIR, "config", 'rename_twitter_config.yaml'), 'r') as file:
+        twitter_configuration = file.read()
+    twitter_configuration = yaml.safe_load(twitter_configuration)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -140,6 +150,13 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
+# Neo4j configuration
+NEO4J_HOST = os.environ.get("NEO4J_HOST")
+NEO4J_USER = os.environ.get("NEO4J_USER")
+NEO4J_PASS = os.environ.get("NEO4J_PASS")
+NEO4J_SESSION = GraphDatabase.driver(NEO4J_HOST, auth=(NEO4J_USER, NEO4J_PASS))
+NEO4J_SESSION.verify_connectivity()
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
