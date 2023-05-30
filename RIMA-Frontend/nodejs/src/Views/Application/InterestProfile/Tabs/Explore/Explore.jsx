@@ -210,7 +210,7 @@ const Explore = (props) => {
     <>
       <Grid container justify="flex-end" style={{paddingTop: 24, paddingBottom: 8}}>
         <Button startIcon={<FilterListIcon/>} color="primary" onClick={handleOpenMenu}>
-          Filter interests
+          Filter interest 
         </Button>
         {data?<Menu
             id="filterInterestExplore"

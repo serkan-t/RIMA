@@ -52,6 +52,7 @@ function getElements(data) {
     {data: {id: -1, label: "My Interests", level: 0, color: "black"}}
   ];
   let currColors = [];
+  const uniqueInterests = new Set();
   try{
     data.map((d) => {
       let colors = getColor(currColors);
@@ -119,7 +120,12 @@ function getElements(data) {
             data: {target: idLevel3, source: idLevel2, color: color},
             classes: ["collapsed", "level3"]
           };
-          elements.push(element, edge);
+          const interest = r.title.toLowerCase();
+          if (!uniqueInterests.has(interest)){
+            uniqueInterests.add(interest);
+            elements.push(element.edge);
+          }
+          //elements.push(element, edge);
         });
       });
     })
