@@ -136,8 +136,9 @@ function getElements(data) {
 }
 
 const NodeLink = (props) => {
-  const {data, keywords} = props;
+  const {data, keywords,setKeywords} = props;
   const [elements, setElements] = useState([]);
+  const [removedInterests, setRemovedInterests] = useState([]);
   const [openDialog, setOpenDialog] = useState({
     openLearn: null,
     openAdd: null
@@ -153,11 +154,58 @@ const NodeLink = (props) => {
     setOpenDialog({...openDialog, openLearn: false});
   };
 
-  const validateInterest = (interests, interest) => {
-    return interests.some((i) => i.text === interest.toLowerCase());
-  };
+  const removeInterest = (interest) => {
+  const updatedKeywords = keywords.filter((item) => item.text !== interest.text);
+  setKeywords(updatedKeywords);
+  setRemovedInterests([...removedInterests, interest]);
+};
 
-  const addNewInterest = async (currInterest) => {
+  const validateInterest = (interest) => {
+  return (
+    keywords.some((item) => item.text === interest.text) ||
+    removedInterests.some((item) => item.text === interest.text)
+  );
+};
+
+
+ /* const validateInterest = (interests, interest) => {
+    return interests.some((i) => i.text === interest.toLowerCase());
+  };*/
+
+  const addNewInterest = (currInterest) => {
+  const alreadyExist = validateInterest(currInterest);
+
+  if (!alreadyExist) {
+    // Remove interest from removedInterests if it exists
+    const updatedRemovedInterests = removedInterests.filter(
+      (item) => item.text !== currInterest.toLowerCase()
+    );
+    setRemovedInterests(updatedRemovedInterests);
+
+    // Add interest to keywords
+    const newInterests = [
+      ...keywords,
+      {
+        id: Date.now(),
+        categories: [],
+        originalKeywords: [],
+        source: "Manual",
+        text: currInterest.toLowerCase(),
+        value: 3,
+      },
+    ];
+
+    // Sort keywords based on value
+    newInterests.sort((a, b) => b.value - a.value);
+
+    setKeywords(newInterests);
+  } else {
+    console.log("Interest already exists in my list!");
+  }
+};
+
+
+  /*const addNewInterest = async (currInterest) => {
     let alreadyExist = validateInterest(keywords, currInterest);
 
      if (!alreadyExist) {
@@ -192,7 +240,7 @@ const NodeLink = (props) => {
          // console.log(newInterests)
      }
      console.log("Interest already exists in my list!")
-  }
+  }*/
 
   //const [state, setState]=useState(getElements(data))
 
@@ -331,6 +379,23 @@ const NodeLink = (props) => {
                 // whether the command is selectable
               },
               {
+                content: "Remove from my interests",
+                contentStyle: {},
+                select: function (ele) {
+                  const currInterest = ele.data()["label"];
+                  const interest = keywords.find((item) => item.text === currInterest);
+                  if (interest) {
+                    removeInterest(interest);
+                    const msg = `The interest ${currInterest} has been removed from your interests.`;
+                    toast.success(msg, {
+                      toastId: "removeInterest",
+                    });
+                  }
+                },
+                enabled: true,
+              },
+              
+              {
                 content: "Add to my interests", // html/text content to be displayed in the menu
                 contentStyle: {}, // css key:value pairs to set the command's css in js if you want
                 select: function (ele) {
@@ -403,6 +468,23 @@ const NodeLink = (props) => {
                 // whether the command is selectable
               },
               {
+                content: "Remove from my interests",
+                contentStyle: {},
+                select: function (ele) {
+                  const currInterest = ele.data()["label"];
+                  const interest = keywords.find((item) => item.text === currInterest);
+                  if (interest) {
+                    removeInterest(interest);
+                    const msg = `The interest ${currInterest} has been removed from your interests.`;
+                    toast.success(msg, {
+                      toastId: "removeInterest",
+                    });
+                  }
+                },
+                enabled: true,
+              },
+              
+              {
                 // example command
                 // optional: custom background color for item
                 content: "Add to my interests", // html/text content to be displayed in the menu
@@ -468,6 +550,24 @@ const NodeLink = (props) => {
 
                 // whether the command is selectable
               },
+              {
+                content: "Remove from my interests",
+                contentStyle: {},
+                select: function (ele) {
+                  const currInterest = ele.data()["label"];
+                  const interest = keywords.find((item) => item.text === currInterest);
+                  if (interest) {
+                    removeInterest(interest);
+                    const msg = `The interest ${currInterest} has been removed from your interests.`;
+                    toast.success(msg, {
+                      toastId: "removeInterest",
+                    });
+                  }
+                },
+                enabled: true,
+              },
+              
+              
               {
                 content: "Add to my interests", // html/text content to be displayed in the menu
                 contentStyle: {}, // css key:value pairs to set the command's css in js if you want
